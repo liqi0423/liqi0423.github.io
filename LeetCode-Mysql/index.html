@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" >
 
-<title>Hello | 李奇李琦李颀</title>
+<title>LeetCode-Mysql | 李奇李琦李颀</title>
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
@@ -24,8 +24,9 @@
 
 
 
-    <meta name="description" content="🔫🔫🔫
-" />
+    <meta name="description" content="LeetCode刷到部门工资最高的员工的Mysql题目
+原题目 https://leetcode-cn.com/problems/department-highest-salary/
+大致审了题 想着两表联查 然后使用Max()求最大值 最..." />
     <meta name="keywords" content="" />
   </head>
   <body>
@@ -97,17 +98,52 @@
       <div class="main-container">
         <div class="content-container" data-aos="fade-up">
           <div class="post-detail">
-            <h2 class="post-title">Hello</h2>
-            <div class="post-date">2019-12-12</div>
-            
-              <div class="feature-container" style="background-image: url('https://liqi0423.github.io/post-images/hello.png')">
-              </div>
+            <h2 class="post-title">LeetCode-Mysql</h2>
+            <div class="post-date">2020-06-10</div>
             
             <div class="post-content" v-pre>
-              <p>🔫🔫🔫</p>
+              <h2 id="leetcode刷到部门工资最高的员工的mysql题目">LeetCode刷到部门工资最高的员工的Mysql题目</h2>
+<p>原题目 <a href="https://leetcode-cn.com/problems/department-highest-salary/">https://leetcode-cn.com/problems/department-highest-salary/</a><br>
+大致审了题 想着两表联查 然后使用Max()求最大值 最后Group by 分组 然而得到的数据是这样的👇👇👇<br>
+<img src="https://liqi0423.github.io/post-images/1591777853541.png" alt="" loading="lazy"><br>
+和标准答案有点差距 哪里出了问题?</p>
+<ul>
+<li>🤔会不会我没排序?<br>
+<img src="https://liqi0423.github.io/post-images/1591778561648.png" alt="" loading="lazy"></li>
+<li>🤔会不会join和max()有冲突?<br>
+  度娘没查到相关的问题 很可能不是 那么验证一下 把数据查询出来写进一张表里面 不用join看看数据是否正确 结果是这样的👇👇👇<br>
+<img src="https://liqi0423.github.io/post-images/1591779338810.png" alt="" loading="lazy"> 那就是和这个没有关系了.</li>
+<li>🤔那肯定是max()和group by的问题了! 只剩这两个了.<br>
+  度娘也验证了这个想法  聚合函数与分组函数一起使用时需要注意 被group by分组的字段不可被聚合函数修饰  如果一起使用只按照group by的字段进行分组, 数据的关联是出错的 本题来说使用'group by department, employee'数据关联可以对应 但是不能实现分组的效果<br>
+<img src="https://liqi0423.github.io/post-images/1591780469736.png" alt="" loading="lazy"><br>
+解决方法: 使用子查询</li>
+<li>对Employee表进行处理 得到分组过后的数据<br>
+<code>select DepartmentId, max(Salary) from Employee group by Employee</code></li>
+<li>两表联查使用再使用in和已过滤的数据进行匹配</li>
+</ul>
+<pre><code class="language-mysql">select d.Name Department, e.Name Employee, Salary 
+from Employee e left join Department d
+on e.DepartmentId = d.Id
+where (e.DepartmentId, Salary) in (
+    select DepartmentId, Max(Salary) from Employee
+    group by DepartmentId
+) 
+</code></pre>
+<p><img src="https://liqi0423.github.io/post-images/1591781318543.png" alt="" loading="lazy"><br>
+left join 部门数据查不到的时候 会出现部门为null的情况 和原题意不符 改为使用join<br>
+<img src="https://liqi0423.github.io/post-images/1591782530718.png" alt="" loading="lazy"></p>
 
             </div>
             
+            
+              <div class="next-post">
+                <div class="next">下一篇</div>
+                <a href="https://liqi0423.github.io/hello/">
+                  <h3 class="post-title">
+                    Hello
+                  </h3>
+                </a>
+              </div>
             
 
             
